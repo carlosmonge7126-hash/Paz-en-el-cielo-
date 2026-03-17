@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title Carlos prueba 2></title>
+
+    <style>
+        /* ==*/
+        h1 {
+            color: rgb(255, 102, 0);
+        position: relative;
+        left: 20%;
+        }
+
+        h2{color:green;
+            left: 35%;
+            position: absolute;        }
+
+        body {
+            background-color: greenyellow;
+
+        }
+        .mi-boton {
+    position: absolute;
+    top: 50%; /* Lo baja un poco */
+    left: 40%; /* Lo centra un poco más */
+    padding: 10px 20px;
+    background-color: rgb(255, 102, 0); /* Naranja como tu H1 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+/*==aqui el boton==*/
+.mi-boton:hover {
+    background-color: darkorange; /* Cambia de color al pasar el mouse */
+}
+/* El fondo oscuro que cubre la pantalla */
+.modal {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1; 
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5); /* Color negro con transparencia */
+}
+
+/* La caja blanca en el centro */
+.modal-contenido {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 50%;
+  text-align: center;
+}
+
+/* El botón de cerrar (X) */
+.cerrar {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.cerrar:hover { color: black; }
+
+b {
+    /* Asegúrate de escribirlo exactamente así, incluyendo el .png al final */
+    background-image:url('image_ceef5755.png'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    margin: 0;
+    height: 100vh;
+}
+    </style>
+
+</head>
+
+<body>
+    <h1>Carlos Prueba 2</h1>
+    <section>
+
+        <div>
+            <h2>montañas</h2>
+
+        </div>
+
+
+        
+    </section>
+    <!-- AQUÍ EL BOTÓN -->
+    <!-- 1. Agregamos el ID 'btnAbrir' al botón que ya tienes -->
+    <button id="btnAbrir" class="mi-boton">Haz clic aquí</button>
+
+    <!-- Estructura del Modal (Está bien colocada) -->
+    <div id="miModal" class="modal">
+      <div class="modal-contenido">
+        <span class="cerrar">&times;</span>
+        <h2>¡Información de Montañas!</h2>
+        <p>Aquí puedes poner texto o imágenes.</p>
+      </div>
+    </div>
+
+    <!-- 2. AGREGAR ESTO para que el botón funcione -->
+    <script>
+      const modal = document.getElementById("miModal");
+      const btn = document.getElementById("btnAbrir");
+      const span = document.getElementsByClassName("cerrar")[0];
+
+      // Abrir modal
+      btn.onclick = function() {
+        modal.style.display = "block";
+      }
+
+      // Cerrar en la X
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // Cerrar si hacen clic fuera de la caja
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+    </script>
+</body>
+</html>
+
+    
+</body>
+
+</html>
