@@ -1,136 +1,103 @@
+
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title Carlos prueba 2></title>
-
+    <title>Paz en el cielo</title>
     <style>
-        /* ==*/
-        h1 {
-            color: rgb(255, 102, 0);
-        position: relative;
-        left: 20%;
-        }
-
-        h2{color:green;
-            left: 35%;
-            position: absolute;        }
-
         body {
-            background-color: greenyellow;
-
+            background-image: url('image_ceef5755.png');
+            background-size: cover; background-position: center;
+            background-attachment: fixed; margin: 0; height: 100vh; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
         }
+
+        h1 { color: rgb(255, 102, 0); position: relative; left: 10%; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
+        h2 { color: #2e7d32; left: 20%; position: absolute; font-style: italic; }
+
+        /* Animación de Pulso */
+        @keyframes pulso {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 0, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 102, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); }
+        }
+
         .mi-boton {
-    position: absolute;
-    top: 50%; /* Lo baja un poco */
-    left: 40%; /* Lo centra un poco más */
-    padding: 10px 20px;
-    background-color: rgb(255, 102, 0); /* Naranja como tu H1 */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-/*==aqui el boton==*/
-.mi-boton:hover {
-    background-color: darkorange; /* Cambia de color al pasar el mouse */
-}
-/* El fondo oscuro que cubre la pantalla */
-.modal {
-  display: none; /* Oculto por defecto */
-  position: fixed;
-  z-index: 1; 
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5); /* Color negro con transparencia */
-}
+            position: absolute; top: 55%; left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px; background-color: rgb(255, 102, 0);
+            color: white; border: none; border-radius: 50px;
+            cursor: pointer; z-index: 10; font-size: 18px; font-weight: bold;
+            animation: pulso 2s infinite;
+        }
 
-/* La caja blanca en el centro */
-.modal-contenido {
-  background-color: white;
-  margin: 15% auto;
-  padding: 20px;
-  border-radius: 10px;
-  width: 50%;
-  text-align: center;
-}
+        /* Modal */
+        .modal {
+            display: none; position: fixed; z-index: 100;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+        }
 
-/* El botón de cerrar (X) */
-.cerrar {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  cursor: pointer;
-}
+        .modal-contenido {
+            background-color: peachpuff; margin: 15% auto;
+            padding: 30px; border-radius: 20px; width: 80%; max-width: 500px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-.cerrar:hover { color: black; }
+        .cerrar { color: #555; float: right; font-size: 30px; font-weight: bold; cursor: pointer; margin-top: -10px; }
+        
+        #frase-paz { font-style: italic; color: #5d4037; margin: 20px 0; font-size: 1.2em; }
 
-b {
-    /* Asegúrate de escribirlo exactamente así, incluyendo el .png al final */
-    background-image:url('image_ceef5755.png'); 
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    margin: 0;
-    height: 100vh;
-}
+        .enlace-youtube {
+            display: inline-block; margin-top: 20px; padding: 12px 20px;
+            background-color: #FF0000; color: white; text-decoration: none;
+            border-radius: 8px; font-weight: bold;
+        }
     </style>
-
 </head>
 
 <body>
-    <h1>Carlos Prueba 2</h1>
-    <section>
 
-        <div>
-            <h2>montañas</h2>
+    <h1>Paz en el cielo</h1>
+    <h2>montañas</h2>
 
-        </div>
+    <button id="btnAbrir" class="mi-boton">Haz clic para conectar</button>
 
-
-        
-    </section>
-    <!-- AQUÍ EL BOTÓN -->
-    <!-- 1. Agregamos el ID 'btnAbrir' al botón que ya tienes -->
-    <button id="btnAbrir" class="mi-boton">Haz clic aquí</button>
-
-    <!-- Estructura del Modal (Está bien colocada) -->
     <div id="miModal" class="modal">
-      <div class="modal-contenido">
-        <span class="cerrar">&times;</span>
-        <h2>¡Información de Montañas!</h2>
-        <p>Aquí puedes poner texto o imágenes.</p>
-      </div>
+        <div class="modal-contenido">
+            <span class="cerrar" id="btnCerrar">&times;</span>
+            <p style="letter-spacing: 2px; color: #e65100; font-weight: bold;">MOMENTO DE CALMA</p>
+            <div id="frase-paz"></div>
+            <a href="https://www.youtube.com/watch?v=qvBYEpMV1FY" target="_blank" class="enlace-youtube">
+                ▶ Escuchar música de paz
+            </a>
+        </div>
     </div>
 
-    <!-- 2. AGREGAR ESTO para que el botón funcione -->
     <script>
-      const modal = document.getElementById("miModal");
-      const btn = document.getElementById("btnAbrir");
-      const span = document.getElementsByClassName("cerrar")[0];
+        const modal = document.getElementById("miModal");
+        const btn = document.getElementById("btnAbrir");
+        const span = document.getElementById("btnCerrar");
+        const contenedorFrase = document.getElementById("frase-paz");
 
-      // Abrir modal
-      btn.onclick = function() {
-        modal.style.display = "block";
-      }
+        const frases = [
+            "\"La paz comienza con una sonrisa.\"",
+            "\"Respira, exhala y deja ir lo que no puedes controlar.\"",
+            "\"Tu calma es tu mayor poder.\"",
+            "\"Encuentra la paz en el silencio de la naturaleza.\"",
+            "\"Un momento de tranquilidad sana el alma.\""
+        ];
 
-      // Cerrar en la X
-      span.onclick = function() {
-        modal.style.display = "none";
-      }
-
-      // Cerrar si hacen clic fuera de la caja
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
+        btn.onclick = function () {
+            const fraseAzar = frases[Math.floor(Math.random() * frases.length)];
+            contenedorFrase.innerText = fraseAzar;
+            modal.style.display = "block";
         }
-      }
+
+        function cerrarModal() { modal.style.display = "none"; }
+        span.onclick = cerrarModal;
+        window.onclick = function (event) { if (event.target == modal) { cerrarModal(); } }
     </script>
 </body>
-</html>
-
-    
-</body>
-
 </html>
