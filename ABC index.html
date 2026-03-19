@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aprendamos Juntos - Aventura Mágica</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+/* --- ESTILO MÁGICO INSPIRADO EN DISNEY (CON TÚNEL DE MARIO) --- */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    text-align: center;
+    background: linear-gradient(145deg, #f8cdda 0%, #a8e6cf 100%);
+    color: #2d4059;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Estrellas mágicas de fondo */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+button {
+    padding: 12px 25px;
+    margin: 5px;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.letra {
+    height: 70px;
+    border-radius: 30px;
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    background: linear-gradient(145deg, #f76c6c, #ff9a8b);
+    border: 3px solid rgba(255,255,255,0.8);
+    box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+}
+
+.letra:hover {
+    transform: scale(1.05) rotate(1deg);
+    background: linear-gradient(145deg, #ff9a8b, #f76c6c);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Tarjetas mágicas */
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    color: #2d4059;
+    padding: 20px;
+    border-radius: 50px;
+    width: 85%;
+    max-width: 380px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 5px #f9d56e, 0 0 0 8px #e3b23c;
+    border: none;
+    animation: aparecer 0.3s ease;
+}
+
+@keyframes aparecer {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+#letra {
+    font-size: 2.8rem !important;
+    margin: 5px 0 !important;
+    color: #f76c6c;
+    text-shadow: 2px 2px 0 #f9d56e;
+}
+
+#img {
+    max-height: 140px;
+    object-fit: contain;
+    margin: 5px 0;
+    border-radius: 30px;
+    border: 4px solid #f9d56e;
+}
+
+.card input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 40px;
+    border: 3px solid #f9d56e;
+    font-size: 1.1rem;
+    text-align: center;
+    font-family: 'Quicksand', sans-serif;
+    background: white;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card button {
+    padding: 10px 15px;
+    margin: 3px;
+    border-radius: 30px;
+    font-size: 1rem;
+    background: #f9d56e;
+    color: #2d4059;
+}
+
+#opciones button {
+    background: #a8e6cf;
+    color: #2d4059;
+}
+
+.correcto { 
+    color: #4caf50;
+    font-size: 2.5rem;
+    animation: bounce 0.5s;
+}
+
+.error { 
+    color: #f44336;
+    font-size: 2.5rem;
+    animation: shake 0.5s;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+.seccion {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    color: #2d4059;
+    margin: 15px auto;
+    padding: 25px;
+    border-radius: 60px;
+    max-width: 450px;
+    border: 4px solid white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 2;
+}
+
+#contador {
+    font-size: 1.5rem;
+    margin: 15px auto;
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    border-radius: 50px;
+    display: inline-block;
+    border: 2px solid white;
+    position: relative;
+    z-index: 2;
+}
+
+/* TÍTULO CON PERSONAJES DISNEY */
+.titulo-con-personajes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.personaje-izquierda, .personaje-derecha {
+    width: 90px;
+    height: 90px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
+}
+
+/* Personajes Disney */
+.personaje-izquierda {
+    background-image: url('https://i.pinimg.com/originals/83/3f/2b/833f2b53ff24e43e01722b37fa5c9b98.png'); /* Minnie Mouse */
+    animation: flotar 3s infinite ease-in-out;
+}
+
+.personaje-derecha {
+    background-image: url('https://i.pinimg.com/originals/8b/2b/4f/8b2b4f7a9a0c1a8e7d9b5c6d4f3a2b1c.png'); /* Mickey Mouse */
+    animation: flotar 3s infinite ease-in-out reverse;
+}
+
+@keyframes flotar {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+h1 {
+    color: #2d4059;
+    text-shadow: 3px 3px 0 #f9d56e, 5px 5px 0 rgba(255,255,255,0.5);
+    font-size: 2.8rem;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ===== TÚNEL ESTILO MARIO BROS (CON COLORES ACTUALES) ===== */
+.tunel-mario-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto;
+}
+
+.tunel-mario {
+    background: linear-gradient(145deg, #2E7D32, #1B5E20); /* Verde Mario clásico */
+    width: 170px;
+    height: 210px;
+    border: 8px solid #8B4513; /* Borde marrón como el original */
+    border-radius: 85px 85px 25px 25px; /* Forma de tubo de Mario */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 0 #4CAF50, 0 20px 30px rgba(0,0,0,0.3); /* Sombra verde */
+}
+
+/* Flecha brillante (manteniendo el estilo mágico) */
+.tunel-mario::before {
+    content: "⬇️";
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    animation: flecha 1s infinite;
+    opacity: 0.9;
+    z-index: 2;
+    filter: drop-shadow(0 0 5px #f9d56e); /* Brillo mágico */
+}
+
+/* Base del tubo */
+.tunel-mario::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    background: #5D4037; /* Marrón oscuro para la base */
+    border-radius: 0 0 20px 20px;
+}
+
+@keyframes flecha {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+}
+
+.tunel-mario:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+    box-shadow: 0 15px 0 #4CAF50, 0 25px 35px rgba(0,0,0,0.3);
+}
+
+.sombra-tunel {
+    width: 190px;
+    height: 20px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 50%;
+    margin-top: -10px;
+    filter: blur(8px);
+}
+
+.texto-tunel {
+    font-size: 2rem;
+    margin-top: 5px;
+    color: #f9d56e;
+    text-shadow: 2px 2px 0 #e3b23c;
+    animation: girar 5s infinite linear;
+}
+
+@keyframes girar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+/* ===== FIN TÚNEL MARIO ===== */
+
+.boton-english {
+    background: #5aa9e6;
+    color: white;
+    font-size: 1rem;
+    padding: 8px 15px;
+    margin: 5px;
+}
+
+.boton-english:hover {
+    background: #3d8fd9;
+}
+
+.controles-escritura {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    margin: 5px 0;
+}
+
+.boton-oculto {
+    display: none !important;
+}
+
+/* Decoración mágica */
+.estrella-fugaz {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 20px 5px #f9d56e;
+    animation: caer 8s infinite linear;
+    z-index: 1;
+}
+
+@keyframes caer {
+    from { transform: translateY(-100vh) translateX(-10vw); opacity: 1; }
+    to { transform: translateY(100vh) translateX(10vw); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Estrellas fugaces decorativas -->
+<div class="estrella-fugaz" style="left: 10%; animation-delay: 0s;"></div>
+<div class="estrella-fugaz" style="left: 30%; animation-delay: 2s;"></div>
+<div class="estrella-fugaz" style="left: 60%; animation-delay: 4s;"></div>
+<div class="estrella-fugaz" style="left: 80%; animation-delay: 1s;"></div>
+
+<!-- Título con personajes Disney -->
+<div class="titulo-con-personajes">
+    <div class="personaje-izquierda" title="Minnie"></div>
+    <h1>✨ Aprendamos Juntos ✨</h1>
+    <div class="personaje-derecha" title="Mickey"></div>
+</div>
+<p>¡Una aventura mágica te espera!</p>
+
+<div id="contador">
+    <span id="correctas">✅ Correctas: 0</span> |
+    <span id="incorrectas">❌ Incorrectas: 0</span>
+</div>
+
+<div>
+    <button onclick="setIdioma('es')" style="background:#f76c6c; color:white;">🇪🇸 Español</button>
+    <button onclick="setIdioma('en')" style="background:#5aa9e6; color:white;">🇺🇸 English</button>
+</div>
+
+<div class="seccion">
+    <h3 id="tituloEscritura">✨ ¡Bienvenido, ingresa al túnel! ✨</h3>
+    <!-- TÚNEL ESTILO MARIO BROS (con la forma clásica) -->
+    <div class="tunel-mario-container">
+        <button class="tunel-mario" onclick="reproducirSonidoMagicoYAbriModal()"></button>
+        <div class="sombra-tunel"></div>
+        <div class="texto-tunel">🌟</div>
+    </div>
+</div>
+
+<div id="grid" class="grid"></div>
+
+<!-- Modal Principal -->
+<div id="modal" class="modal">
+  <div class="card">
+    <h2 id="letra"></h2>
+    <img id="img" width="100%">
+    <div id="opciones"></div>
+
+    <input id="input" placeholder="Escribe aquí...">
+    <div class="controles-escritura">
+        <button onclick="validarTexto()" style="background:#6c5ce7; color:white;">✅ OK</button>
+        <button onclick="iniciarVoz()" style="background:#f76c6c; color:white;">🎤 Hablar</button>
+        <button onclick="hablarNormal(correcta)" style="background:#f9d56e;">🔊 Escuchar</button>
+    </div>
+
+    <p id="feedback"></p>
+
+    <button onclick="cerrar()" style="background:#a8e6cf; color:#2d4059;">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal de Escritura Libre -->
+<div id="modalEscritura" class="modal">
+  <div class="card">
+    <h2 style="font-size:1.6rem; margin:5px 0">✍️ ¡Escribe en el túnel mágico!</h2>
+    <input id="inputLibre" placeholder="Escribe o habla...">
+
+    <div class="controles-escritura">
+        <button onclick="validarLibre()" style="background:#6c5ce7; color:white;">✅ Validar</button>
+        <button onclick="iniciarVozLibre()" style="background:#f76c6c; color:white;">🎤 Hablar</button>
+        <button onclick="hablarNormal(inputLibre.value)" style="background:#f9d56e;">🔊 Escuchar</button>
+        <button id="botonIngles" onclick="hablarIngles(inputLibre.value)" class="boton-english boton-oculto">🇺🇸 Pronunciación</button>
+    </div>
+
+    <p id="resultadoLibre" style="font-size:1.5rem"></p>
+    <button onclick="cerrarModalEscritura()" style="background:#a8e6cf; color:#2d4059;">Cerrar</button>
+  </div>
+</div>
+
+<!-- AUDIOS -->
+<audio id="correctSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
+<audio id="errorSound" src="https://www.soundjay.com/misc/sounds/buzzer-1.mp3" preload="auto"></audio>
+<audio id="magicSound" src="https://www.myinstants.com/media/sounds/mario-pipe.mp3" preload="auto"></audio>
+
+<script>
+let idioma = "es";
+let correctCount = 0;
+let incorrectCount = 0;
+
+// Todas las letras
+const letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+
+// Colores mágicos
+const colores = ["#f76c6c", "#ff9a8b", "#f9d56e", "#a8e6cf", "#5aa9e6", "#9b5de5", "#f15bb5"];
+
+// Base de datos
+let data = {
+    A: { es: "ARBOL", en: "TREE", img: "https://cdn.pixabay.com/photo/2016/03/31/19/56/tree-1297256_640.png" },
+    B: { es: "BARCO", en: "BOAT", img: "https://cdn.pixabay.com/photo/2017/01/31/13/14/ship-2029754_640.png" },
+    C: { es: "CASA", en: "HOUSE", img: "https://cdn.pixabay.com/photo/2016/04/01/09/07/house-1300301_640.png" },
+    D: { es: "PERRO", en: "DOG", img: "https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_640.jpg" },
+    E: { es: "ELEFANTE", en: "ELEPHANT", img: "https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_640.jpg" },
+    F: { es: "FLOR", en: "FLOWER", img: "https://cdn.pixabay.com/photo/2015/04/19/08/32/rose-729509_640.jpg" },
+    G: { es: "GATO", en: "CAT", img: "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_640.jpg" },
+    H: { es: "HELICOPTERO", en: "HELICOPTER", img: "https://cdn.pixabay.com/photo/2014/04/05/11/40/helicopter-316523_640.jpg" },
+    I: { es: "IGLU", en: "IGLOO", img: "https://cdn.pixabay.com/photo/2017/08/07/15/18/igloo-2604693_640.jpg" },
+    J: { es: "JIRAFA", en: "GIRAFFE", img: "https://cdn.pixabay.com/photo/2016/11/21/15/03/giraffe-1845908_640.jpg" },
+    K: { es: "KOALA", en: "KOALA", img: "https://cdn.pixabay.com/photo/2018/02/21/05/18/koala-3169427_640.jpg" },
+    L: { es: "LEON", en: "LION", img: "https://cdn.pixabay.com/photo/2018/07/31/22/08/lion-3576045_640.jpg" },
+    M: { es: "MANZANA", en: "APPLE", img: "https://cdn.pixabay.com/photo/2016/11/30/15/00/apples-1873078_640.jpg" },
+    N: { es: "NUBE", en: "CLOUD", img: "https://cdn.pixabay.com/photo/2017/07/03/20/17/clouds-2468904_640.jpg" },
+    Ñ: { es: "ÑU", en: "WILDEBEEST", img: "https://cdn.pixabay.com/photo/2016/10/21/09/25/wildebeest-1757550_640.jpg" },
+    O: { es: "OSO", en: "BEAR", img: "https://cdn.pixabay.com/photo/2013/07/13/11/44/bear-158668_640.png" },
+    P: { es: "PATO", en: "DUCK", img: "https://cdn.pixabay.com/photo/2017/02/17/14/03/duck-2074310_640.jpg" },
+    Q: { es: "QUESO", en: "CHEESE", img: "https://cdn.pixabay.com/photo/2018/07/19/00/12/cheese-3547689_640.jpg" },
+    R: { es: "RATON", en: "MOUSE", img: "https://cdn.pixabay.com/photo/2016/03/28/10/05/mouse-1285453_640.jpg" },
+    S: { es: "SOL", en: "SUN", img: "https://cdn.pixabay.com/photo/2017/04/05/01/16/sun-2203665_640.png" },
+    T: { es: "TORTUGA", en: "TURTLE", img: "https://cdn.pixabay.com/photo/2016/11/29/08/39/animal-1868428_640.jpg" },
+    U: { es: "UVA", en: "GRAPE", img: "https://cdn.pixabay.com/photo/2017/08/01/08/29/grapes-2563228_640.jpg" },
+    V: { es: "VACA", en: "COW", img: "https://cdn.pixabay.com/photo/2018/02/27/11/09/cow-3185454_640.jpg" },
+    W: { es: "WATERPOLO", en: "WATERPOLO", img: "https://cdn.pixabay.com/photo/2016/11/22/21/38/waterpolo-1850591_640.jpg" },
+    X: { es: "XILOFONO", en: "XYLOPHONE", img: "https://cdn.pixabay.com/photo/2017/01/31/15/17/mallets-2025708_640.png" },
+    Y: { es: "YOGA", en: "YOGA", img: "https://cdn.pixabay.com/photo/2016/11/22/23/09/yoga-1851192_640.jpg" },
+    Z: { es: "ZORRO", en: "FOX", img: "https://cdn.pixabay.com/photo/2017/01/12/23/18/fox-1975836_640.png" }
+};
+
+// Diccionarios
+const diccionarioEspanol = [
+    "ARBOL", "BARCO", "CASA", "PERRO", "ELEFANTE", "FLOR", "GATO", "HELICOPTERO",
+    "IGLU", "JIRAFA", "KOALA", "LEON", "MANZANA", "NUBE", "ÑU", "OSO", "PATO",
+    "QUESO", "RATON", "SOL", "TORTUGA", "UVA", "VACA", "WATERPOLO", "XILOFONO",
+    "YOGA", "ZORRO", "AUTOBUS", "AUTOBÚS", "CAMION", "CAMIÓN", "COCHE", "CARRO", "MOTO",
+    "BICICLETA", "TREN", "AVION", "AVIÓN", "GLOBO", "PATINETE", "CARLOS", "MARIA",
+    "MARÍA", "JOSE", "JOSÉ", "ANA", "LUIS", "PEDRO", "JUAN", "HOLA", "ADIOS",
+    "ADIÓS", "GRACIAS", "PORFAVOR", "SI", "SÍ", "NO", "BIEN", "MAL", "FELIZ"
+];
+
+const diccionarioIngles = [
+    "TREE", "BOAT", "HOUSE", "DOG", "ELEPHANT", "FLOWER", "CAT", "HELICOPTER",
+    "IGLOO", "GIRAFFE", "KOALA", "LION", "APPLE", "CLOUD", "WILDEBEEST",
+    "BEAR", "DUCK", "CHEESE", "MOUSE", "SUN", "TURTLE", "GRAPE", "COW",
+    "WATERPOLO", "XYLOPHONE", "YOGA", "FOX", "CAR", "CARS", "BUS", "BUSES",
+    "TRUCK", "TRUCKS", "BIKE", "BIKES", "TRAIN", "TRAINS", "PLANE", "PLANES",
+    "SHIP", "SHIPS", "HELLO", "GOODBYE", "THANK", "YOU", "PLEASE", "YES", "NO"
+];
+
+// Elementos DOM
+const grid = document.getElementById("grid");
+const modal = document.getElementById("modal");
+const img = document.getElementById("img");
+const opciones = document.getElementById("opciones");
+const input = document.getElementById("input");
+const feedback = document.getElementById("feedback");
+const titulo = document.getElementById("letra");
+const inputLibre = document.getElementById("inputLibre");
+const correctasElement = document.getElementById("correctas");
+const incorrectasElement = document.getElementById("incorrectas");
+const resultadoLibre = document.getElementById("resultadoLibre");
+const botonIngles = document.getElementById("botonIngles");
+
+let correcta = "";
+
+// Funciones de audio y voz
+function reproducirSonidoMagicoYAbriModal() {
+    const sonido = document.getElementById("magicSound");
+    if (sonido) {
+        sonido.currentTime = 0;
+        sonido.play().catch(e => console.log("Error al reproducir sonido:", e));
+    }
+    if (navigator.vibrate) navigator.vibrate(50);
+    setTimeout(() => abrirModalEscritura(), 300);
+}
+
+function hablarNormal(texto) {
+    if (!texto) return;
+    speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = idioma === "es" ? "es-ES" : "en-US";
+    msg.rate = 0.95;
+    msg.pitch = 1.1;
+    msg.volume = 1;
+    setTimeout(() => speechSynthesis.speak(msg), 100);
+}
+
+function hablarIngles(texto) {
+    if (!texto) return;
+    speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "en-US";
+    msg.rate = 0.9;
+    msg.pitch = 1.0;
+    setTimeout(() => speechSynthesis.speak(msg), 100);
+}
+
+function hablarFraseCorrecta() {
+    const frases = {
+        es: ["¡Maravilloso!", "¡Eres increíble!", "¡Lo hiciste genial!", "¡Qué bien!", "¡Eres un artista!"],
+        en: ["Wonderful!", "You're amazing!", "You did great!", "So good!", "You're an artist!"]
+    };
+    hablarNormal(frases[idioma][Math.floor(Math.random() * frases[idioma].length)]);
+}
+
+function hablarFraseIncorrecta() {
+    const frases = {
+        es: ["Casi, inténtalo otra vez", "Tú puedes", "Un poco más", "Sigue practicando", "Ánimo"],
+        en: ["Almost, try again", "You can do it", "A little more", "Keep practicing", "Cheer up"]
+    };
+    hablarNormal(frases[idioma][Math.floor(Math.random() * frases[idioma].length)]);
+}
+
+function esPalabraValida(palabra) {
+    const palabraNormalizada = palabra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    let diccionario = idioma === "es" ? diccionarioEspanol : diccionarioIngles;
+    const diccionarioNormalizado = diccionario.map(p => p.normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+    return diccionarioNormalizado.includes(palabraNormalizada);
+}
+
+function setIdioma(id) {
+    idioma = id;
+    document.getElementById("tituloEscritura").innerText =
+        idioma === "es" ? "✨ ¡Bienvenido, ingresa al túnel! ✨" : "✨ Welcome, enter the tunnel! ✨";
+    
+    if (idioma === "en") botonIngles.classList.remove("boton-oculto");
+    else botonIngles.classList.add("boton-oculto");
+
+    hablarNormal(idioma === "es" ? "¡Bienvenido! ¿Listo para aprender?" : "Welcome! Ready to learn?");
+}
+
+// Grid de letras
+letras.forEach((l, i) => {
+    let b = document.createElement("button");
+    b.className = "letra";
+    let color = colores[i % 7];
+    b.style.background = `linear-gradient(145deg, ${color}, ${color}dd)`;
+    b.innerText = l;
+    b.onclick = () => abrir(l, i);
+    grid.appendChild(b);
+});
+
+function abrir(l, i) {
+    if (!data[l]) {
+        hablarNormal(idioma === "es" ? "Pronto aprenderemos esta letra" : "We'll learn this letter soon");
+        return;
+    }
+    correcta = idioma === "es" ? data[l].es : data[l].en;
+    titulo.innerText = l;
+    img.src = data[l].img;
+    let color = colores[i % 7];
+    input.style.border = `4px solid ${color}`;
+    generarOpciones();
+    modal.style.display = "flex";
+    hablarNormal(correcta);
+}
+
+function generarOpciones() {
+    opciones.innerHTML = "";
+    let lista = Object.values(data).map(d => idioma === "es" ? d.es : d.en).filter(p => p !== correcta);
+    let mezcla = [correcta, ...lista.sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+    mezcla.forEach(o => {
+        let b = document.createElement("button");
+        b.innerText = o;
+        b.onclick = () => validar(o);
+        opciones.appendChild(b);
+    });
+}
+
+function validar(r) {
+    if (r === correcta) {
+        feedback.innerHTML = "<span class='correcto'>✔</span>";
+        document.getElementById("correctSound").play();
+        correctCount++;
+        hablarFraseCorrecta();
+    } else {
+        feedback.innerHTML = "<span class='error'>❌</span>";
+        document.getElementById("errorSound").play();
+        incorrectCount++;
+        hablarFraseIncorrecta();
+    }
+    actualizarContadores();
+}
+
+function actualizarContadores() {
+    correctasElement.innerText = `✅ Correctas: ${correctCount}`;
+    incorrectasElement.innerText = `❌ Incorrectas: ${incorrectCount}`;
+}
+
+function validarTexto() {
+    let val = input.value.trim().toUpperCase();
+    validar(val);
+    input.value = "";
+}
+
+function validarLibre() {
+    let val = inputLibre.value.trim().toUpperCase();
+    const esCorrecto = esPalabraValida(val);
+    const mensajeCorrecto = idioma === "es" ? "<span class='correcto'>✔ ¡Excelente! 🎉</span>" : "<span class='correcto'>✔ Excellent! 🎉</span>";
+    const mensajeIncorrecto = idioma === "es" ? "<span class='error'>❌ ¡Inténtalo de nuevo! </span>" : "<span class='error'>❌ Try again! </span>";
+    resultadoLibre.innerHTML = esCorrecto ? mensajeCorrecto : mensajeIncorrecto;
+    if (esCorrecto) {
+        document.getElementById("correctSound").play();
+        correctCount++;
+        hablarFraseCorrecta();
+    } else {
+        document.getElementById("errorSound").play();
+        incorrectCount++;
+        hablarFraseIncorrecta();
+    }
+    actualizarContadores();
+}
+
+// Voz
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = SR ? new SR() : null;
+
+function iniciarVoz() {
+    if (!rec) { hablarNormal("Actualiza tu navegador"); return; }
+    hablarNormal(idioma === "es" ? "Te escucho" : "I'm listening");
+    rec.lang = idioma === "es" ? "es-ES" : "en-US";
+    rec.start();
+    rec.onresult = e => {
+        let texto = e.results[0][0].transcript.toUpperCase().trim();
+        input.value = texto;
+        validar(texto);
+    };
+    rec.onerror = () => hablarNormal(idioma === "es" ? "No te escuché" : "I didn't hear you");
+}
+
+function iniciarVozLibre() {
+    if (!rec) { hablarNormal("Actualiza tu navegador"); return; }
+    hablarNormal(idioma === "es" ? "Habla" : "Speak");
+    rec.lang = idioma === "es" ? "es-ES" : "en-US";
+    rec.start();
+    rec.onresult = e => {
+        let texto = e.results[0][0].transcript.toUpperCase().trim();
+        inputLibre.value = texto;
+        const esCorrecto = esPalabraValida(texto);
+        const mensajeCorrecto = idioma === "es" ? "<span class='correcto'>✔ ¡Excelente! 🎉</span>" : "<span class='correcto'>✔ Excellent! 🎉</span>";
+        const mensajeIncorrecto = idioma === "es" ? "<span class='error'>❌ ¡Inténtalo de nuevo! </span>" : "<span class='error'>❌ Try again! </span>";
+        resultadoLibre.innerHTML = esCorrecto ? mensajeCorrecto : mensajeIncorrecto;
+        if (esCorrecto) {
+            document.getElementById("correctSound").play();
+            correctCount++;
+            hablarFraseCorrecta();
+        } else {
+            document.getElementById("errorSound").play();
+            incorrectCount++;
+            hablarFraseIncorrecta();
+        }
+        actualizarContadores();
+    };
+}
+
+function abrirModalEscritura() {
+    document.getElementById("modalEscritura").style.display = "flex";
+    hablarNormal(idioma === "es" ? "¡Bienvenido, ingresa al túnel!" : "Welcome, enter the tunnel!");
+}
+
+function cerrarModalEscritura() {
+    document.getElementById("modalEscritura").style.display = "none";
+    resultadoLibre.innerHTML = "";
+    inputLibre.value = "";
+}
+
+function cerrar() {
+    modal.style.display = "none";
+    input.value = "";
+    feedback.innerHTML = "";
+}
+
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+window.onload = () => {
+    botonIngles.classList.add("boton-oculto");
+    setTimeout(() => hablarNormal("¡Bienvenido! Aprendamos juntos"), 600);
+};
+</script>
+
+</body>
+</html>
